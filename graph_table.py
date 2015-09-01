@@ -107,6 +107,8 @@ def graphdata(entries, family, time_period=time_period, points=points):
     plt.savefig(filename)
 
 def tweet(family, time_period=time_period):
+    Config = ConfigParser.ConfigParser()
+    Config.read('config')
     if time_period == 'w':
         status = 'Weekly BGP table movement: '
         suffix = "-weekly.png"
@@ -130,7 +132,6 @@ def tweet(family, time_period=time_period):
         consumer_secret = Config.get('bgp6_account', 'consumer_secret')
         access_token = Config.get('bgp6_account', 'access_token')
         access_token_secret = Config.get('bgp6_account', 'access_token_secret')
-
         filename = path + 'graph_v6-' + yesterday + suffix
 
     twitter = Twython(consumer_key, consumer_secret,
@@ -149,9 +150,6 @@ def main():
     graphdata(entries, 4)
     graphdata(entries, 6)
     if not silent:
-        Config = ConfigParser.ConfigParser()
-        Config.read('config')
-
         tweet(4)
         tweet(6)
 
