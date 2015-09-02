@@ -1,31 +1,32 @@
 #!/usr/bin/env python
 
+import json
+import time
+import datetime
+import os
+import numpy as np
+from pylab import *
+from twython import Twython
+import ConfigParser
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
+import matplotlib.dates as mdates
+
 ''' Arguments are as folows:
     1 - Time length (w, m, 6m, y)
     2 - Data points to use (any integer)
     3 - Don't tweet graph straight away'''
 
-'''Need to fix monthly graphs. Didn't run
-    last time. Also 'yesterday' doesn't
-    work if Monday falls on 2nd or 3rd of
-    month!!!'''
+''' Need to fix monthly graphs. Didn't run
+   last time. Also 'yesterday' doesn't
+   work if Monday falls on 2nd or 3rd of
+   month!!!'''
 
-import json
-import time
-import datetime
-import os
-import matplotlib
-matplotlib.use('Agg')
-from matplotlib import pyplot as plt
-import numpy as np
-import matplotlib.dates as mdates
-from pylab import *
-from twython import Twython
-import ConfigParser
 
 # Variables
 yesterday = datetime.date.today() - datetime.timedelta(days=1)
-yesterday =  yesterday.strftime("%d-%b-%Y")
+yesterday = yesterday.strftime("%d-%b-%Y")
 path = '/home/darreno/bgp_graphs/'
 time_period = sys.argv[1]
 points = int(sys.argv[2])
@@ -41,11 +42,13 @@ elif time_period == 'm':
 elif time_period == 'y' or time_period == '6m':
         filename = path + 'bgp_yearly.json'
 
+
 # Read data
 def loadvalues(filename):
     with open(filename, 'r') as f:
         entries = json.load(f)
     return entries
+
 
 # Create Graphs
 def graphdata(entries, family, time_period=time_period, points=points):
@@ -85,11 +88,12 @@ def graphdata(entries, family, time_period=time_period, points=points):
             date_time.append(datetime.datetime.fromtimestamp(entry["time"]))
             use_points = 0
 
-    plt.figure(figsize=(12,10))
+    plt.figure(figsize=(12, 10))
     ax = subplot(111)
     xfmt = mdates.DateFormatter('%Y-%m-%d')
     ax.xaxis.set_major_formatter(xfmt)
-    plt.suptitle(title + ' table movement for ' + update + ' ending ' + yesterday, fontsize=17)
+    plt.suptitle(title + ' table movement for ' + update + ' ending ' +
+                 yesterday, fontsize=17)
     ax.grid(True)
     ax.spines["top"].set_visible(False)
     ax.spines["bottom"].set_visible(False)
@@ -101,11 +105,14 @@ def graphdata(entries, family, time_period=time_period, points=points):
     plt.yticks(fontsize=12)
     plt.ticklabel_format(axis='y', style='plain', useOffset=False)
     plt.tick_params(axis="both", which="both", bottom="off", top="off",
-                            labelbottom="on", left="off", right="off", labelleft="on")
+                    labelbottom="on", left="off", right="off", labelleft="on")
     plt.plot(date_time, prefixes, 'o-', lw=1, alpha=0.4, color=colour)
-    plt.figtext(0.5, 0.93, "data by: @mellowdrifter | www.mellowd.co.uk/ccie", fontsize=14, color='gray', ha='center', va='top', alpha=0.8)
+    plt.figtext(0.5, 0.93, "data by: @mellowdrifter | www.mellowd.co.uk/ccie",
+                fontsize=14, color='gray', ha='center', va='top', alpha=0.8)
     plt.savefig(filename)
 
+
+# Tweet data to the world
 def tweet(family, time_period=time_period):
     Config = ConfigParser.ConfigParser()
     Config.read('config')
