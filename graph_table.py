@@ -5,11 +5,11 @@ import time
 import datetime
 import os
 import numpy as np
-from pylab import *
 from twython import Twython
 import ConfigParser
 import matplotlib
 matplotlib.use('Agg')
+from pylab import *
 from matplotlib import pyplot as plt
 import matplotlib.dates as mdates
 
@@ -115,7 +115,8 @@ def graphdata(entries, family, time_period=time_period, points=points):
 # Tweet data to the world
 def tweet(family, time_period=time_period):
     Config = ConfigParser.ConfigParser()
-    Config.read('config')
+    config_file = path + 'config'
+    Config.read(config_file)
     if time_period == 'w':
         status = 'Weekly BGP table movement: '
         suffix = "-weekly.png"
